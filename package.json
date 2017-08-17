@@ -1,0 +1,15 @@
+{
+  "name": "babel-plugin-webpack-named-dynamic-imports",
+  "version": "1.0.0",
+  "description": "A babel plugin for naming webpack imports",
+  "main": "index.js",
+  "repository": "git@github.com:jakwuh/babel-plugin-webpack-named-dynamic-imports.git",
+  "author": "jakwuh <jakwuh@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-generator": "^6.26.0"
+  },
+  "dependencies": {
+    "babylon": "^6.18.0"
+  }
+}
