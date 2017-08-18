@@ -36,7 +36,7 @@ module.exports = function ({types: t}) {
                 t.identifier('Promise'),
                 t.identifier('all')
             ),
-            args
+            [t.arrayExpression(args)]
         );
     }
 
@@ -46,15 +46,23 @@ module.exports = function ({types: t}) {
                 let {node} = path;
 
                 if (t.isIdentifier(node.callee, {name: 'importModules'})) {
-                    let [modules, chunkName] = node.arguments;
+                    let elements,
+                        [modules, chunkName] = node.arguments;
 
                     if (t.isArrayExpression(modules)) {
-                        path.replaceWith(generateImports(modules.elements, chunkName));
-                        console.log(generate(generateImports(modules.elements, chunkName)).code);
+                        elements = modules.elements;
                     } else if (t.isStringLiteral(modules)) {
-                        path.replaceWith(generateImport(modules, chunkName));
+                        elements = [modules];
                     } else {
                         throw new Error('Invalid importModules() syntax');
+                    }
+
+                    if (elements.length === 0) {
+                        path.remove();
+                    } else if (elements.length === 1) {
+                        path.replaceWith(generateImport(elements[0], chunkName));
+                    } else {
+                        path.replaceWith(generateImports(elements, chunkName));
                     }
                 }
 
