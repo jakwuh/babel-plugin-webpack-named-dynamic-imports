@@ -17,5 +17,8 @@
   },
   "scripts": {
     "test": "node ./test.js"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   }
 }
