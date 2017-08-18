@@ -1,4 +1,7 @@
-## babel-plugin-webpack-named-dynamic-imports
+## babel-plugin-webpack-named-dynamic-imports [![Build Status][1]][2]
+
+[1]: https://travis-ci.org/jakwuh/babel-plugin-extract-dependency-definitions.svg?branch=master
+[2]: https://travis-ci.org/jakwuh/babel-plugin-extract-dependency-definitions
 
 A babel plugin which implements a better syntax for `webpack@2+` dynamic imports.
 
