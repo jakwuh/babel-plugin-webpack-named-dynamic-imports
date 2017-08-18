@@ -1,7 +1,9 @@
 const generate = require('babel-generator').default;
-const {parse} = require('babylon');
+const parse = require('babylon').parse;
 
-module.exports = function ({types: t}) {
+module.exports = function (options) {
+    const t = options.types;
+
     function generateImportString(path, chunkName) {
         if (chunkName) {
             return `i(/* webpackChunkName: "${chunkName.value}" */ "${path.value}")`;
@@ -11,9 +13,9 @@ module.exports = function ({types: t}) {
     }
 
     function generateImport(path, chunkName) {
-        let ast = parse(generateImportString(path, chunkName));
-        let callExpression = ast.program.body[0].expression;
-        let args = callExpression.arguments;
+        const ast = parse(generateImportString(path, chunkName));
+        const callExpression = ast.program.body[0].expression;
+        const args = callExpression.arguments;
 
         return t.callExpression(t.import(), args);
     }
@@ -25,11 +27,11 @@ module.exports = function ({types: t}) {
     }
 
     function generateImports(paths, chunkName) {
-        let ast = parse(generateImportsString(paths, chunkName));
-        let callExpression = ast.program.body[0].expression;
-        let promises = callExpression.arguments[0].elements;
+        const ast = parse(generateImportsString(paths, chunkName));
+        const callExpression = ast.program.body[0].expression;
+        const promises = callExpression.arguments[0].elements;
 
-        let args = promises.map(promise => t.callExpression(t.import(), promise.arguments))
+        const args = promises.map(promise => t.callExpression(t.import(), promise.arguments))
 
         return t.callExpression(
             t.memberExpression(
@@ -43,16 +45,17 @@ module.exports = function ({types: t}) {
     return {
         visitor: {
             CallExpression(path) {
-                let {node} = path;
+                const node = path.node;
 
                 if (t.isIdentifier(node.callee, {name: 'importModules'})) {
-                    let elements,
-                        [modules, chunkName] = node.arguments;
+                    const elements = [],
+                        modules = node.arguments[0],
+                        chunkName = node.arguments[1];
 
                     if (t.isArrayExpression(modules)) {
-                        elements = modules.elements;
+                        modules.elements.forEach(el => elements.push(el));
                     } else if (t.isStringLiteral(modules)) {
-                        elements = [modules];
+                        elements.push(modules);
                     } else {
                         throw new Error('Invalid importModules() syntax');
                     }

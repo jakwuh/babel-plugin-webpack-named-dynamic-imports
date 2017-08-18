@@ -30,14 +30,16 @@ const transformedCode = babel.transform(input, {
     ]
 }).code;
 
-const diffArr = diff.diffChars(transformedCode, output);
+const failed = diff.diffChars(transformedCode, output).reduce((memo, item) => {
+    const removed = item.removed;
+    const added = item.added;
+    const value = removed || added ? item.value.replace(' ', '⎵') : item.value;
 
-let failed = false;
-for (let {removed, added, value} of diffArr) {
-    let color = removed ? 'red': (added ? 'green' : 'white');
+    const color = removed ? 'red': (added ? 'green' : 'white');
     process.stdout.write(chalk[color](value));
-    failed = failed || removed;
-}
+
+    return memo || removed;
+}, false);
 
 if (failed) {
     console.error(chalk.bold.red('\nTest failed.\n'));
